@@ -4,11 +4,22 @@ API backend para extração de dados estruturados a partir de texto livre, utili
 
 ## Visão Geral
 
-Recebe um texto em linguagem natural e retorna um JSON estruturado com informações extraídas sobre uma pessoa (nome, idade, e-mail e cargo), sem nenhuma lógica de parsing manual — toda a extração é feita pelo LLM.
+Recebe um texto em linguagem natural e retorna um JSON estruturado com informações extraídas, sem nenhuma lógica de parsing manual — toda a extração é feita pelo LLM.
 
+## Endpoints
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/health` | Verifica se a API está no ar |
+| `POST` | `/extract/person` | Extrai dados de uma pessoa a partir de texto livre |
+
+### GET /health
+
+```json
+{ "status": "ok" }
 ```
-POST /extract
-```
+
+### POST /extract/person
 
 **Entrada:**
 ```json
@@ -24,6 +35,8 @@ POST /extract
   "job": "engenheira de software"
 }
 ```
+
+Campos opcionais (`age`, `email`, `job`) retornam `null` quando não encontrados no texto.
 
 ## Stack
 
@@ -101,15 +114,20 @@ A API estará disponível em `http://localhost:8000`.
 
 Acesse `http://localhost:8000/docs` para a interface Swagger UI gerada automaticamente pelo FastAPI.
 
-## Exemplo de Uso
+## Exemplos de Uso
 
 ```bash
-curl -X POST http://localhost:8000/extract \
+# Healthcheck
+curl http://localhost:8000/health
+```
+
+```bash
+# Extração de dados de pessoa
+curl -X POST http://localhost:8000/extract/person \
   -H "Content-Type: application/json" \
   -d '{"text": "Carlos Souza, 28 anos, analista de dados. Contato: carlos@email.com"}'
 ```
 
-Resposta:
 ```json
 {
   "name": "Carlos Souza",
@@ -119,8 +137,6 @@ Resposta:
 }
 ```
 
-Campos opcionais (`age`, `email`, `job`) retornam `null` quando não encontrados no texto.
-
 ## Decisões de Arquitetura
 
 | Decisão | Motivo |
@@ -129,6 +145,7 @@ Campos opcionais (`age`, `email`, `job`) retornam `null` quando não encontrados
 | Retry automático | O LLM pode ocasionalmente retornar JSON malformado; uma segunda tentativa resolve a maioria dos casos |
 | Prompt em arquivo `.txt` separado | Facilita ajustes no comportamento do LLM sem tocar no código Python |
 | `OPENAI_BASE_URL` configurável | Permite trocar de provedor (OpenAI, Groq, Ollama, etc.) sem alteração de código |
+| Rota `/extract/{tipo}` | Prefixo compartilhado prepara a API para novos tipos de extração sem quebrar a estrutura existente |
 
 ## Licença
 
