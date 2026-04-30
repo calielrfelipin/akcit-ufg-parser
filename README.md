@@ -58,6 +58,11 @@ akcit-ufg-parser/
 │   │   └── llm_service.py           # Integração com o LLM
 │   └── prompts/
 │       └── extractor_person.txt     # Template de prompt para extração de pessoas
+├── tests/
+│   └── test_api.py                  # Suite de testes pytest
+├── docs/
+│   ├── escopo-do-projeto.md         # Escopo, requisitos e stack
+│   └── backlog.md                   # Itens implementados e planejados
 ├── .env.example                     # Modelo de variáveis de ambiente
 ├── requirements.txt
 ├── prompts-claude.md                # Registro dos prompts usados com IA generativa
@@ -161,6 +166,14 @@ curl -X POST http://localhost:8000/extract/person \
 | `OPENAI_BASE_URL` configurável | Permite trocar de provedor (OpenAI, Groq, Ollama, etc.) sem alteração de código |
 | Rota `/extract/{tipo}` | Prefixo compartilhado prepara a API para novos tipos de extração sem quebrar a estrutura existente |
 | Nome de prompt `extractor_{tipo}.txt` | Convenção de nomenclatura espelha as rotas, facilitando rastrear qual prompt serve qual endpoint |
+
+## Documentação
+
+| Arquivo | Conteúdo |
+|---------|----------|
+| [docs/escopo-do-projeto.md](docs/escopo-do-projeto.md) | Objetivo, funcionalidades, requisitos não-funcionais e o que está fora do escopo |
+| [docs/backlog.md](docs/backlog.md) | Itens implementados por categoria e próximos passos planejados |
+| [prompts-claude.md](prompts-claude.md) | Registro dos prompts usados com IA generativa para gerar os artefatos do projeto |
 
 ## Licença
 
