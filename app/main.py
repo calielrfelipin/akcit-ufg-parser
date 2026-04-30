@@ -6,7 +6,7 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 
-from app.schemas import ExtractRequest, ExtractResponse
+from app.schemas import ExtractRequest, ExtractResponse, HealthResponse
 from app.services.llm_service import extract_entities
 
 
@@ -17,9 +17,14 @@ app = FastAPI(
 )
 
 
-@app.post("/extract", response_model=ExtractResponse)
-def extract(request: ExtractRequest) -> ExtractResponse:
-    """Recebe texto livre e retorna dados estruturados extraídos por um LLM.
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse(status="ok")
+
+
+@app.post("/extract/person", response_model=ExtractResponse)
+def extract_person(request: ExtractRequest) -> ExtractResponse:
+    """Recebe texto livre e retorna dados estruturados de uma pessoa extraídos por um LLM.
 
     - **text**: Texto em linguagem natural contendo informações sobre uma pessoa.
 
@@ -28,8 +33,6 @@ def extract(request: ExtractRequest) -> ExtractResponse:
     try:
         return extract_entities(request.text)
     except ValueError as exc:
-        # Erro de validação do JSON retornado pelo LLM
         raise HTTPException(status_code=422, detail=str(exc))
     except Exception as exc:
-        # Erros inesperados (rede, autenticação, etc.)
         raise HTTPException(status_code=500, detail=f"Erro interno: {exc}")
