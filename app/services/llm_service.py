@@ -9,7 +9,7 @@ from app.schemas import ExtractResponse
 
 
 # Localiza o arquivo de prompt relativo a este módulo
-_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "extractor.txt"
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "extractor_person.txt"
 
 # Inicializa o cliente OpenAI com suporte a provedores compatíveis via OPENAI_BASE_URL
 _client = OpenAI(
