@@ -45,20 +45,22 @@ Campos opcionais (`age`, `email`, `job`) retornam `null` quando não encontrados
 - **Pydantic v2** — validação de dados de entrada e saída
 - **OpenAI SDK** — integração com LLM (compatível com qualquer provedor OpenAI-compatible)
 - **python-dotenv** — gerenciamento de variáveis de ambiente
+- **slowapi** — rate limiting por IP
 
 ## Estrutura do Projeto
 
 ```
 akcit-ufg-parser/
 ├── app/
-│   ├── main.py                  # Ponto de entrada da API
-│   ├── schemas.py               # Modelos Pydantic (request e response)
+│   ├── main.py                      # Ponto de entrada da API
+│   ├── schemas.py                   # Modelos Pydantic (request e response)
 │   ├── services/
-│   │   └── llm_service.py       # Integração com o LLM
+│   │   └── llm_service.py           # Integração com o LLM
 │   └── prompts/
-│       └── extractor.txt        # Template de prompt
-├── .env.example                 # Modelo de variáveis de ambiente
+│       └── extractor_person.txt     # Template de prompt para extração de pessoas
+├── .env.example                     # Modelo de variáveis de ambiente
 ├── requirements.txt
+├── prompts-claude.md                # Registro dos prompts usados com IA generativa
 └── README.md
 ```
 
@@ -90,6 +92,7 @@ Edite o arquivo `.env` criado no passo anterior:
 OPENAI_API_KEY=sk-...          # Chave da OpenAI (ou do provedor escolhido)
 OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4o-mini
+ENVIRONMENT=development        # Use "production" para desabilitar /docs e /redoc
 ```
 
 ### Usando Groq (alternativa gratuita)
@@ -114,6 +117,8 @@ A API estará disponível em `http://localhost:8000`.
 
 Acesse `http://localhost:8000/docs` para a interface Swagger UI gerada automaticamente pelo FastAPI.
 
+> Disponível apenas quando `ENVIRONMENT` não estiver definido como `production`.
+
 ## Exemplos de Uso
 
 ```bash
@@ -137,6 +142,15 @@ curl -X POST http://localhost:8000/extract/person \
 }
 ```
 
+## Segurança
+
+| Medida | Detalhe |
+|--------|---------|
+| Validação de entrada | `text` limitado entre 1 e 5000 caracteres via `Field` do Pydantic — rejeita vazio e textos gigantes com 422 automático |
+| Rate limiting | 10 requisições por minuto por IP no `POST /extract/person` via `slowapi` — retorna 429 se exceder |
+| Log estruturado | Erros internos registrados com `logging` no servidor; o cliente recebe apenas `"Erro interno do servidor."` sem detalhes de implementação |
+| Docs condicionais | `/docs` e `/redoc` desabilitados quando `ENVIRONMENT=production` |
+
 ## Decisões de Arquitetura
 
 | Decisão | Motivo |
@@ -146,6 +160,7 @@ curl -X POST http://localhost:8000/extract/person \
 | Prompt em arquivo `.txt` separado | Facilita ajustes no comportamento do LLM sem tocar no código Python |
 | `OPENAI_BASE_URL` configurável | Permite trocar de provedor (OpenAI, Groq, Ollama, etc.) sem alteração de código |
 | Rota `/extract/{tipo}` | Prefixo compartilhado prepara a API para novos tipos de extração sem quebrar a estrutura existente |
+| Nome de prompt `extractor_{tipo}.txt` | Convenção de nomenclatura espelha as rotas, facilitando rastrear qual prompt serve qual endpoint |
 
 ## Licença
 

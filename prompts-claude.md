@@ -89,3 +89,25 @@ Objetivo: Escreva o README completo com: visão geral, tabela de endpoints, stac
 Estilo: Markdown direto e profissional, sem seções desnecessárias.
 Resposta: Forneça o arquivo README.md completo.
 ```
+
+---
+
+## Prompt 9 - Revisão de segurança
+
+```text
+Contexto: API FastAPI em Python com um endpoint POST /extract/person que recebe texto livre, injeta em um prompt e chama um LLM via OpenAI SDK. Sem autenticação, exposta publicamente.
+Objetivo: Identifique os principais riscos de segurança do projeto e o que pode ser adicionado para mitigá-los.
+Estilo: Análise direta agrupada por risco, com exemplos de código onde aplicável.
+Resposta: Liste os riscos encontrados e sugestões de melhoria em formato de checklist.
+```
+
+---
+
+## Prompt 10 - Melhorias de segurança
+
+```text
+Contexto: API FastAPI com endpoint POST /extract/person. Foram identificados os seguintes riscos: sem limite de tamanho no texto de entrada, erro interno exposto no HTTP 500, sem rate limiting e /docs habilitado em produção.
+Objetivo: Implemente as quatro melhorias: (1) Field(min_length=1, max_length=5000) no schema de request; (2) rate limiting de 10 req/min por IP com slowapi; (3) log estruturado com o módulo logging — erros internos logados no servidor, cliente recebe mensagem genérica no 500; (4) /docs e /redoc desabilitados quando ENVIRONMENT=production.
+Estilo: Código limpo, sem abstrações desnecessárias. Altere apenas os arquivos necessários.
+Resposta: Forneça os arquivos alterados: app/schemas.py, app/main.py, app/services/llm_service.py, requirements.txt e .env.example.
+```
