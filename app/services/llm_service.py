@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from pathlib import Path
 
@@ -6,6 +7,8 @@ from openai import OpenAI
 from pydantic import ValidationError
 
 from app.schemas import ExtractResponse
+
+logger = logging.getLogger(__name__)
 
 
 # Localiza o arquivo de prompt relativo a este módulo
@@ -82,6 +85,7 @@ def extract_entities(text: str) -> ExtractResponse:
         try:
             return _parse_response(raw)
         except (json.JSONDecodeError, ValidationError, KeyError) as exc:
+            logger.error("LLM returned invalid response after two attempts: %s", exc)
             raise ValueError(
                 f"O LLM retornou uma resposta inválida após duas tentativas: {exc}"
             ) from exc
