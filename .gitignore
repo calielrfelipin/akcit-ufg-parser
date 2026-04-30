@@ -1,0 +1,26 @@
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Variáveis de ambiente - NUNCA subir
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Distribuição / empacotamento
+dist/
+build/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+
+# Testes
+.pytest_cache/
+.coverage
